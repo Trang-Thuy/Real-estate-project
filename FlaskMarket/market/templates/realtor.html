@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block title %}
+   Realtor Page
+{% endblock %}
+{% block content %}
+{% if cart_page %}
+{%else%}
+{% include 'search_saler.html'%}
+{% endif%}
+<!-- search_result.html -->
+<div class="row" style="margin-top:20px; margin-left:20px">
+   <div class="col-8">
+      
+ 
+       <h2>Our realtor</h2>
+       <p>Top saler</p>
+       <br>
+   {% include 'table_template.html'%}
+   </div>
+</div>
+{% endblock %}
+
+
+
+
+

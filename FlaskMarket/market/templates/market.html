@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block title %}
+Market Page
+{% endblock %}
+{% block content %}
+{% if cart_page %}
+<form method="POST">
+   {{ my_cart_form.csrf_token }}
+   <div class="field">
+      <div class="control">
+         {{ my_cart_form.producttype }}
+      </div>
+   </div>
+   <div class="field">
+      <div class="control">
+         <button class="button is-link" type="submit">View Cart</button>
+      </div>
+   </div>
+</form>
+{%else%}
+{% include 'search.html'%}
+{% endif%}
+<!-- search_result.html -->
+<div class="row" style="margin-top:20px; margin-left:20px">
+   <div class="col-8">
+      <h2>Available items on the Market</h2>
+      <p>Click on one of the items to start buying</p>
+      <br>
+      {% include 'table_template.html'%}
+   </div>
+</div>
+{% endblock %}

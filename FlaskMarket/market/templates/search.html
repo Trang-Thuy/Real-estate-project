@@ -1,0 +1,77 @@
+<head>
+   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+{%block content%}
+<body class="text-center">
+   <div class="container">
+      <form method="POST" action="{{ url_for('market_page') }}">
+         {{ form.hidden_tag() }}
+         
+         
+         <div class="form-row">
+          <div class="col">
+         {{ form.city.label(class="control-label") }}
+         <select id="{{ form.city.id }}" name="{{ form.city.name }}" class="{{ form.city.class }}">
+         {% for value, label in form.city.choices %}
+         <option value="{{ value }}" {% if value == form.city.data %}selected{% endif %}>{{ label }}</option>
+         {% endfor %}
+         </select>
+         </div>
+         <div class = "col">
+         {{ form.district.label(class="control-label") }}
+         <select id="{{ form.district.id }}" name="{{ form.district.name }}" class="{{ form.district.class }}">
+         </select>
+         </div>
+         <div class = "col">
+         {{ form.price.label(class="control-label") }}
+         <select id="{{ form.price.id }}" name="{{ form.price.name }}" class="{{ form.price.class }}">
+         {% for value, label in form.price.choices %}
+         <option value="{{ value }}" {% if value == form.price.data %}selected{% endif %}>{{ label }}</option>
+         {% endfor %}
+         </select>
+         </div>
+         <div class = "col">
+         {{ form.square.label() }}
+         {{ form.square(class="form-control", placeholder="Square") }}
+         <br>
+         </div>
+         <div class = "col">
+         {{ form.submit(class="btn btn-lg btn-block btn-primary")}}
+         </div>
+      </form>
+      <script>
+         document.addEventListener('DOMContentLoaded', function() {
+           // Fetch districts based on the selected city
+           function updateDistricts() {
+             var selectedCity = document.getElementById("city").value;
+             var districtSelect = document.getElementById("district");
+         
+             // Clear existing options
+             districtSelect.innerHTML = "";
+         
+             // Fetch districts based on the selected city
+             fetch(`/get_districts?city=${selectedCity}`)
+               .then(response => response.json())
+               .then(data => {
+                 // Add new options based on the fetched data
+                 data.districts.forEach(district => {
+                   var option = document.createElement("option");
+                   option.text = district;
+                   districtSelect.add(option);
+                 });
+               })
+               .catch(error => console.error('Error:', error));
+           }
+         
+           // Add event listener to update districts when city changes
+           document.getElementById("city").addEventListener("change", updateDistricts);
+         
+           // Call the function initially to populate districts based on the default city
+           updateDistricts();
+         });
+      </script>
+      <div class="form-group">
+      </div>
+   </div>
+</body>
+{%endblock%}

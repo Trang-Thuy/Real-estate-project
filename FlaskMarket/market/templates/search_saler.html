@@ -1,0 +1,29 @@
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+ </head>
+ {%block content%}
+ <body class="text-center">
+    <div class="container">
+       <form method="POST" action="{{ url_for('realtor_page') }}">
+          {{ form.hidden_tag() }}
+          
+          <div class="form-row">
+           <div class="col">
+            {{ form.contact_name.label() }}
+          {{ form.contact_name(class="form-control", placeholder="Name") }}
+          </div>
+          <div class = "col">
+          {{ form.contact_phone.label() }}
+          {{ form.contact_phone(class="form-control", placeholder="Phone") }}
+          <br>
+          </div>
+          <div class = "col">
+          {{ form.submit(class="btn btn-lg btn-block btn-primary")}}
+          </div>
+       </form>
+      
+       <div class="form-group">
+       </div>
+    </div>
+ </body>
+ {%endblock%}

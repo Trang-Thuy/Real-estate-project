@@ -1,0 +1,82 @@
+{% block content %}
+<div class="row" style="margin-top:20px; margin-left:20px">
+   <div class="col-20">
+      {%if is_saler_page %}
+      <table>
+         <thead>
+            <tr>
+               <th scope="col">id</th>
+               <th scope="col">Name</th>
+               <th scope="col">Phone</th>
+               <th scope = "col" colspan="4"> Options</th>
+            </tr>
+         </thead>
+         <tbody>
+            {% for item in items %}
+            <tr>
+               <td>{{item.id}}</td>
+               <td>{{item.contact_name}}</td>
+               <td>{{item.contact_phone}}</td>
+               <td>
+                  <div class="btn-group">
+                     <a class="btn btn-outline btn-info" href="{{ url_for('get_realtor_info', realtor_id=item.id) }}">More Info</a>          
+                     {% if cart_page %}
+                     <form method="POST" action="{{ url_for('delete_to_cart_realtor', realtor_id=item.id) }}">
+                        <button class="btn btn-outline btn-info" type="submit">Delete from Cart</button>
+                     </form>
+                     {% else %}
+                     <p>sting</p>
+                     <form method="POST" action="{{ url_for('add_to_cart_realtor', realtor_id=item.id, current_page_url=request.url) }}">
+                        <input type="hidden" name="current_page_url" value="{{ request.url }}">
+                        <button class="btn btn-primary" type="submit">Add to Cart</button>
+                     </form>
+                     {% endif %}
+                  </div>
+               </td>
+            </tr>
+            {% endfor %}
+         </tbody>
+      </table>
+      {%else%}
+      <table>
+         <thead>
+            <tr>
+               <!-- Your Columns HERE -->
+               <th scope="col">Title</th>
+               <th scope="col">Price</th>
+               <th scope="col">Square</th>
+               <th scope="col">Address</th>
+               <th scope = "col" colspan="4"> Options</th>
+            </tr>
+         </thead>
+         <tbody>
+            {% for item in items %}
+            <tr>
+               <td>{{item.title}}</td>
+               <td>{{item.price}} M</td>
+               <td>{{item.square}} m2</td>
+               <td>{{item.address}} m2</td>
+               <!-- Add more attributes as needed -->
+               <td>
+                  <div class="btn-group">
+                     <a class="btn btn-outline btn-info" href="{{ url_for('get_home_info', home_id=item.id) }}">More Info</a>          
+                     {% if cart_page %}
+                     <form method="POST" action="{{ url_for('delete_to_cart', home_id=item.id) }}">
+                        <button class="btn btn-outline btn-info" type="submit">Delete from Cart</button>
+                     </form>
+                     {% else %}
+                     <form method="POST" action="{{ url_for('add_to_cart', home_id=item.id, current_page_url=request.url) }}">
+                        <input type="hidden" name="current_page_url" value="{{ request.url }}">
+                        <button class="btn btn-primary" type="submit">Add to Cart</button>
+                     </form>
+                     {% endif %}
+                  </div>
+               </td>
+            </tr>
+            {% endfor %}
+         </tbody>
+      </table>
+      {% endif %}
+   </div>
+</div>
+{% endblock %}

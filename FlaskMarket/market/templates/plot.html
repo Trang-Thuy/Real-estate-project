@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Data Visualization</title>
+        <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    </head>
+    <body>
+        <div id="plot"></div>
+        <script>
+            var data = {{ fig_json | safe }};
+            Plotly.newPlot('plot', data.data, data.layout);
+        </script>
+    </body>
+</html>

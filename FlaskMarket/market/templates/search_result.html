@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block title %}
+   Search results
+{% endblock %}
+{% block content %}
+<!-- search_result.html -->
+<div class="row" style="margin-top:20px; margin-left:20px">
+   <div class="col-8">
+      
+ 
+       <h2>Result base on your input</h2>
+       <p>Click on one of the items to start buying</p>
+       <br>
+   {% include 'table_template.html'%}
+   </div>
+</div>
+{% endblock %}
+
+
+
+
+
