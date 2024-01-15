@@ -68,6 +68,12 @@ input {
   grid-template-columns: repeat(5, 1fr);
   grid-gap: 30px;
 }
+
+.grid4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-gap: 30px;
+}
 label {
   color: #2d3954;
   font-size: 14px;
