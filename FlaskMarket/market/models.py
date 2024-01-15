@@ -67,17 +67,32 @@ class Item(db.Model):
          db.session.commit()
     
 class Home(db.Model):
-        id = db.Column(db.Integer(),primary_key=True)
-        title = db.Column(db.String(length=300), nullable=False)
-        price = db.Column(db.Integer(),nullable=False)
-        square = db.Column(db.Integer(), nullable=False)
-        address=db.Column(db.String(length=1024), nullable=False)
-        street = db.Column(db.Integer())
-        ward = db.Column(db.String(length=300))
-        province = db.Column(db.String(length=300))
-        district = db.Column(db.String(length=300))
-        count = db.Column(db.Integer(),nullable=False)
-    # owner = db.Column(db.Integer(), db.ForeignKey('user.id'))
+    id = db.Column(db.Integer(),primary_key=True)
+    title = db.Column(db.String(length=300), nullable=False)
+    price = db.Column(db.Integer(),nullable=False)
+    square = db.Column(db.Integer(), nullable=False)
+    address=db.Column(db.String(length=1024), nullable=False)
+    street = db.Column(db.Integer())
+    ward = db.Column(db.String(length=300))
+    province = db.Column(db.String(length=300))
+    district = db.Column(db.String(length=300))
+    count = db.Column(db.Integer(),nullable=False)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'title': self.title,
+            'price': self.price,
+            'square': self.square,
+            'address': self.address,
+            'street': self.street,
+            'ward': self.ward,
+            'province': self.province,
+            'district': self.district,
+            'count': self.count
+        }
+
+     
 
 class CartItem(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -98,3 +113,10 @@ class Realtor(db.Model):
     contact_name = db.Column(db.String(length=300), nullable=False)
     contact_phone = db.Column(db.Integer(), nullable=False)
     cart = db.relationship('CartItem', backref='saler_cart', lazy=True)
+
+    def to_dict(self):
+        return {
+            'contact_name' : self.contact_name,
+            'contact_phone' : self.contact_phone
+        }
+

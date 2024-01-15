@@ -46,13 +46,20 @@ class SearchForm(FlaskForm):
     price = SelectField('Price Range', choices=[(str(i), str(i)) for i in range(1000, 5000, 1000)])
     square = StringField('Square')
     submit = SubmitField('Search')
-    def __init__(self, *args, **kwargs):
+    def __init__(self, json_data = None, *args, **kwargs):
         super(SearchForm, self).__init__(*args, **kwargs)
         self.city.choices = [(item.province, item.province) for item in Home.query.all()]
         self.city.choices = list(set(self.city.choices))
 
         if self.city.data:
             self.district.choices = [(item.district, item.district) for item in Home.query.filter_by(province=self.city.data).all()]
+    def to_dict(self):
+        return {
+            'city': self.city.data,
+            'district': self.district.data,
+            'price': self.price.data,
+            'square': self.square.data
+        }
 
 class SearchContactForm(FlaskForm):
     contact_name = StringField('Name')

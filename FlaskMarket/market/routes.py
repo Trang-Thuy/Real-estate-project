@@ -1,7 +1,8 @@
 from market import app
 from flask import render_template, redirect, url_for, flash, request,jsonify,session
+from market.controller.cart_controller import RealtorController_add_to_cart_realtor, RealtorController_get_all_realtor, RealtorController_get_realtor_info
 from market.models import Item, User, Home, CartItem, Realtor
-from market.forms import RegisterForm, LoginForm, PurchaseItemForm, SellItemForm, SearchForm, SearchContactForm, MyCartTypeForm
+from market.forms import RegisterForm, LoginForm, SearchForm, SearchContactForm, MyCartTypeForm
 from wtforms import StringField, PasswordField, SubmitField, SelectField
 import plotly.graph_objects as go
 from market import db
@@ -9,6 +10,9 @@ from flask_login import login_user, logout_user, login_required, current_user
 from flask import Flask, render_template, jsonify
 from flask_sqlalchemy import SQLAlchemy
 import json
+
+
+from market.controller.market_controller import get_home_info, get_market, search_market
 
 @app.context_processor
 def base():
@@ -32,56 +36,18 @@ def get_districts():
     
 @app.route('/market',methods=['GET','POST'])
 def market_page():
-    search_form = SearchForm()
-    unique_provinces = list(set([item.province for item in Home.query.all()]))
-    item_names = [(province, province) for province in unique_provinces]
-    search_form.city.choices = item_names
 
     if request.method == "POST":
-        if search_form.validate_on_submit():
-            city = search_form.city.data
-            search_form.district.choices = [(item, item) for item in get_unique_districts(city)]
-            district = search_form.district.data
-            price = search_form.price.data
-            square = search_form.square.data
-            results = Home.query.filter((Home.province.contains(city)) &
-                (Home.district.contains(district)) &
-                (Home.price < price) &
-                (Home.square < square)
-            ).all()
-            session['search_executed'] = 1
-            if results:
-                is_cart_page = False
-                is_saler_page = False
-                session['search_results'] = [(item.id, item.province, item.district, item.price, item.square) for item in results]
-                return render_template('market.html', items=results,art_page=is_cart_page,is_saler_page=is_saler_page)
-            else:
-                flash('There are no results matching your search', category='danger')
-        return redirect(url_for('market_page'))
+        search_form_data = request.get_json()
+        return search_market(search_form_data)
      
     if request.method == "GET":
-        items = Home.query.all()
-        session['search_executed'] = 2
-        if 'search_executed' in session and session['search_executed']<=2:
-            if 'search_results' in session:
-                result_ids = [item[0] for item in session['search_results']]
-                items = Home.query.filter(Home.id.in_(result_ids)).all()
-            items = Home.query.all()
-        is_cart_page = False
-        is_saler_page = False
-        return render_template('market.html', items=items, cart_page=is_cart_page, form=search_form,is_saler_page=is_saler_page)
+        return get_market()
     
-def get_unique_districts(city):
-    response = app.test_client().get(f'/get_districts?city={city}')
-    return response.json['districts']
 
 @app.route('/market/home_id=<int:home_id>', methods=['GET'])
-def get_home_info(home_id):
-    home = Home.query.filter_by(id=home_id).first()
-    if home:
-        return render_template('home_info.html', home=home)
-    else:
-        flash(f'Not found')
+def get_home(home_id):
+    return get_home_info(home_id)
 
 @app.route('/add_to_cart/<int:home_id>', methods=['POST'])
 @login_required
@@ -210,49 +176,24 @@ def realtor_page():
             else:
                 flash('There are no results matching your search', category='danger')
         return redirect(url_for('realtor_page'))
+
     if request.method == "GET":
-        saler = Realtor.query.all()
-        is_cart_page = False
-        is_saler_page= True
-        return render_template('realtor.html', items=saler, cart_page=is_cart_page,is_saler_page=is_saler_page,form=search_contact_form )
+        return RealtorController_get_all_realtor()
 
 @app.route('/saler/realtor_id=<int:realtor_id>', methods=['GET'])
 def get_realtor_info(realtor_id):
-    realtor = Realtor.query.filter_by(id=realtor_id).first()
-    if realtor:
-        return render_template('home_info.html', home=realtor)
-    else:
-        flash(f'Not found')
+    return RealtorController_get_realtor_info(realtor_id)
 
 @app.route('/add_to_cart_realtor/<int:realtor_id>', methods=['POST'])
 @login_required
 def add_to_cart_realtor(realtor_id):
-    session['search_executed'] -= 1
-    current_page_url = request.form.get('current_page_url', '/')
-    realtor = Realtor.query.get_or_404(realtor_id)
-    cart_item = CartItem.query.filter_by(user_id=current_user.id, realtor_id=realtor.id).first()
-    new_cart_item = CartItem(user_id=current_user.id, realtor_id=realtor.id)
-    if cart_item:        
-        flash(f"{realtor.contact_name} already in your cart", category="danger")
-    else:
-        new_cart_item.add()
-        flash(f"You are successly haved add {realtor.contact_name} to your cart!", category="success")
-    return redirect(current_page_url)
+    return RealtorController_add_to_cart_realtor(realtor_id, current_user);
 
 
 @app.route('/delete_to_cart_realtor/<int:realtor_id>', methods=['POST'])
 @login_required
 def delete_to_cart_realtor(realtor_id):
-    realtor = Realtor.query.get_or_404(realtor_id)
-    cart_item = CartItem.query.filter_by(user_id=current_user.id, realtor_id=realtor.id).first()
-    if cart_item:
-        db.session.delete(cart_item)
-        db.session.commit()
-        
-        flash(f"You just deleted {realtor.contact_name} from your cart", category="success")
-    else:
-        flash(f"Item not found in your cart", category="danger")
-    return redirect(url_for('my_cart'))
+    return RealtorController_add_to_cart_realtor(realtor_id, current_user)
 
 # @app.route('/visualize_page')
 # def visualize_page():
