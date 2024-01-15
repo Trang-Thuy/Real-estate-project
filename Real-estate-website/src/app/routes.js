@@ -12,22 +12,22 @@ import SignIn from "../components/Auth/SignIn";
 const routes = [
    {
       path: '/',
-      element: <Pages />,
-      children: [
-         { path: '/', element: <Home /> },
-         { path: '/agent', element: <Agent /> },
-         { path: '/services', element: <Services /> },
-         { path: '/blog', element: <Blog />},
-         { path: '/pricing', element: <Pricing />},
-         { path: '/contact', element: <Contact />}
-      ],
-   },
-   {
-      path: '/auth',
       element: <MainLayout />,
       children: [
-         { path: 'login', element: <SignIn /> },
-         { path: 'register', element: <SignUp /> },
+         { path: '/login', element: <SignIn /> },
+         { path: '/register', element: <SignUp /> },
+         {
+            path: '/',
+            element: <Pages />,
+            children: [
+               { path: '/', element: <Home /> },
+               { path: '/agent', element: <Agent /> },
+               { path: '/services', element: <Services /> },
+               { path: '/blog', element: <Blog />},
+               { path: '/pricing', element: <Pricing />},
+               { path: '/contact', element: <Contact />}
+            ],
+         }
       ],
    },
 ];
