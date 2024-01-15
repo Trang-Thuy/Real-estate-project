@@ -1,6 +1,5 @@
 from market import app
 from flask import render_template, redirect, url_for, flash, request,jsonify,session
-from market.controller.cart_controller import RealtorController_add_to_cart_realtor, RealtorController_get_all_realtor, RealtorController_get_realtor_info
 from market.models import Item, User, Home, CartItem, Realtor
 from market.forms import RegisterForm, LoginForm, SearchForm, SearchContactForm, MyCartTypeForm
 from wtforms import StringField, PasswordField, SubmitField, SelectField
@@ -11,8 +10,9 @@ from flask import Flask, render_template, jsonify
 from flask_sqlalchemy import SQLAlchemy
 import json
 
-
-from market.controller.market_controller import get_home_info, get_market, search_market
+from market.controller.market_controller import MarketController
+from market.controller.auth_controller import AuthController
+from market.controller.realtor_controller import RealtorController
 
 @app.context_processor
 def base():
@@ -36,18 +36,17 @@ def get_districts():
     
 @app.route('/market',methods=['GET','POST'])
 def market_page():
-
     if request.method == "POST":
-        search_form_data = request.get_json()
-        return search_market(search_form_data)
+        search_form_data = request.form
+        return MarketController.search_market(search_form_data)
      
     if request.method == "GET":
-        return get_market()
+        return MarketController.get_market()
     
 
 @app.route('/market/home_id=<int:home_id>', methods=['GET'])
 def get_home(home_id):
-    return get_home_info(home_id)
+    return MarketController.get_home_info(home_id)
 
 @app.route('/add_to_cart/<int:home_id>', methods=['POST'])
 @login_required
@@ -142,18 +141,9 @@ def register_page():
 
 @app.route('/login',methods=['GET','POST'])
 def login_page():
-    form = LoginForm()
+    login_form_data = request.get_json()
+    return AuthController.login(login_form_data)
 
-    if form.validate_on_submit():
-        attempted_user = User.query.filter_by(username=form.username.data).first()
-        if attempted_user and attempted_user.check_password_correction(
-            attempted_password=form.password.data):
-                login_user(attempted_user)
-                flash(f'Sucess! You are logged in as: {attempted_user.username}',category='success')
-                return redirect(url_for('market_page'))
-        else:
-            flash("Please try again",category='danger')
-    return render_template('login.html',form = form)
 
 @app.route('/logout')
 def logout_page():
@@ -178,22 +168,22 @@ def realtor_page():
         return redirect(url_for('realtor_page'))
 
     if request.method == "GET":
-        return RealtorController_get_all_realtor()
+        return RealtorController.get_all_realtor()
 
 @app.route('/saler/realtor_id=<int:realtor_id>', methods=['GET'])
 def get_realtor_info(realtor_id):
-    return RealtorController_get_realtor_info(realtor_id)
+    return RealtorController.get_realtor_info(realtor_id)
 
 @app.route('/add_to_cart_realtor/<int:realtor_id>', methods=['POST'])
 @login_required
 def add_to_cart_realtor(realtor_id):
-    return RealtorController_add_to_cart_realtor(realtor_id, current_user);
+    return RealtorController.add_to_cart_realtor(realtor_id, current_user);
 
 
 @app.route('/delete_to_cart_realtor/<int:realtor_id>', methods=['POST'])
 @login_required
 def delete_to_cart_realtor(realtor_id):
-    return RealtorController_add_to_cart_realtor(realtor_id, current_user)
+    return RealtorController.add_to_cart_realtor(realtor_id, current_user)
 
 # @app.route('/visualize_page')
 # def visualize_page():

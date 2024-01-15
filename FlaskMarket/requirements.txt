@@ -1,0 +1,10 @@
+alembic==1.13.1
+Flask==3.0.0
+Flask_Bcrypt==1.0.1
+Flask_Login==0.6.3
+Flask_Migrate==4.0.5
+flask_sqlalchemy==3.1.1
+flask_wtf==1.2.1
+plotly==5.18.0
+SQLAlchemy==2.0.25
+WTForms==3.1.2
